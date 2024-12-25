@@ -1,0 +1,446 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuadCV - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-purple: #6b46c1;
+            --secondary-purple: #553c9a;
+            --light-purple: #f3f0ff;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background: var(--primary-purple);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            height: calc(100vh - 56px);
+            position: fixed;
+            width: 250px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .sidebar-link {
+            color: #333;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            display: block;
+            transition: all 0.3s;
+        }
+
+        .sidebar-link:hover {
+            background: var(--light-purple);
+            color: var(--primary-purple);
+        }
+
+        .sidebar-link.active {
+            background: var(--light-purple);
+            color: var(--primary-purple);
+            border-left: 4px solid var(--primary-purple);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid var(--light-purple);
+            font-weight: bold;
+            color: var(--primary-purple);
+        }
+
+        .btn-purple {
+            background-color: var(--primary-purple);
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background-color: var(--secondary-purple);
+            color: white;
+        }
+
+        .template-card {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .template-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .template-card.selected {
+            border: 2px solid var(--primary-purple);
+        }
+
+        .profile-overview {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 0.2rem rgba(107, 70, 193, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">QuadCV</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="py-4">
+            <a href="#" class="sidebar-link active"><i class="bi bi-house-door me-2"></i> Dashboard</a>
+            <a href="#" class="sidebar-link"><i class="bi bi-file-earmark-text me-2"></i> My CVs</a>
+            <a href="#" class="sidebar-link"><i class="bi bi-grid me-2"></i> Templates</a>
+            <a href="#" class="sidebar-link"><i class="bi bi-gear me-2"></i> Settings</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Profile Overview -->
+        <div class="profile-overview">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <img src="{{ user.profile_picture.url }}" alt="Profile" class="img-fluid rounded-circle" 
+                         onerror="this.src='https://via.placeholder.com/100'">
+                </div>
+                <div class="col-md-10">
+                    <h4>Welcome back, {{ user.username }}!</h4>
+                    <p class="text-muted">Complete your CV information below to generate your professional resume.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CV Form -->
+        <form method="post" class="cv-form">
+            {% csrf_token %}
+            
+            <!-- Personal Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-person me-2"></i> Personal Information
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" name="fullName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="profession" class="form-label">Profession/Title</label>
+                            <input type="text" class="form-control" id="profession" name="profession" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone_number }}" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" name="address">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-file-text me-2"></i> Professional Summary
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <textarea class="form-control" id="summary" name="summary" rows="4" required></textarea>
+                        <div class="form-text">Write a brief summary of your professional background and key qualifications.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-briefcase me-2"></i> Work Experience</span>
+                    <button type="button" class="btn btn-sm btn-purple" id="addExperience">
+                        <i class="bi bi-plus"></i> Add Experience
+                    </button>
+                </div>
+                <div class="card-body" id="experienceContainer">
+                    <div class="experience-entry mb-3 border-bottom pb-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Company Name</label>
+                                <input type="text" class="form-control" name="company[]" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Position</label>
+                                <input type="text" class="form-control" name="position[]" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="month" class="form-control" name="workStartDate[]" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="month" class="form-control" name="workEndDate[]">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Responsibilities & Achievements</label>
+                                <textarea class="form-control" name="workDescription[]" rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-mortarboard me-2"></i> Education</span>
+                    <button type="button" class="btn btn-sm btn-purple" id="addEducation">
+                        <i class="bi bi-plus"></i> Add Education
+                    </button>
+                </div>
+                <div class="card-body" id="educationContainer">
+                    <div class="education-entry mb-3 border-bottom pb-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Institution</label>
+                                <input type="text" class="form-control" name="institution[]" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Degree/Qualification</label>
+                                <input type="text" class="form-control" name="degree[]" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="month" class="form-control" name="eduStartDate[]" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="month" class="form-control" name="eduEndDate[]">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-lightning me-2"></i> Skills
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="skills" name="skills" 
+                               placeholder="Enter your skills (comma separated)" required>
+                        <div class="form-text">Example: Python, JavaScript, Project Management, Team Leadership</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-layout-text-window me-2"></i> Choose Template
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card template-card">
+                                <img src="/api/placeholder/300/200" class="card-img-top" alt="Template 1">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="template" id="template1" value="1" required>
+                                        <label class="form-check-label" for="template1">
+                                            Professional
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card template-card">
+                                <img src="/api/placeholder/300/200" class="card-img-top" alt="Template 2">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="template" id="template2" value="2">
+                                        <label class="form-check-label" for="template2">
+                                            Modern
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card template-card">
+                                <img src="/api/placeholder/300/200" class="card-img-top" alt="Template 3">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="template" id="template3" value="3">
+                                        <label class="form-check-label" for="template3">
+                                            Creative
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-purple btn-lg">
+                    <i class="bi bi-file-earmark-pdf me-2"></i> Generate CV
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Function to create remove button
+        function createRemoveButton() {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn btn-sm btn-danger mt-2';
+            button.innerHTML = '<i class="bi bi-trash"></i> Remove';
+            button.onclick = function() {
+                this.closest('.experience-entry, .education-entry').remove();
+            };
+            return button;
+        }
+    
+        // Add Work Experience
+        document.getElementById('addExperience').addEventListener('click', function() {
+            const container = document.getElementById('experienceContainer');
+            const newEntry = container.children[0].cloneNode(true);
+            
+            // Clear all input values
+            newEntry.querySelectorAll('input, textarea').forEach(input => {
+                input.value = '';
+            });
+            
+            // Add remove button
+            newEntry.appendChild(createRemoveButton());
+            
+            container.appendChild(newEntry);
+        });
+    
+        // Add Education
+        document.getElementById('addEducation').addEventListener('click', function() {
+            const container = document.getElementById('educationContainer');
+            const newEntry = container.children[0].cloneNode(true);
+            
+            // Clear all input values
+            newEntry.querySelectorAll('input').forEach(input => {
+                input.value = '';
+            });
+            
+            // Add remove button
+            newEntry.appendChild(createRemoveButton());
+            
+            container.appendChild(newEntry);
+        });
+    
+        // Template Selection
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.template-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Check the radio button
+                this.querySelector('input[type="radio"]').checked = true;
+            });
+        });
+    
+        // Form Submission
+        document.querySelector('.cv-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+            submitButton.disabled = true;
+            
+            // Here you would typically send the form data to your Django backend
+            // For now, we'll just simulate a delay
+            setTimeout(() => {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+                
+                // Show success message (you can customize this based on your needs)
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show';
+                alert.innerHTML = `
+                    <strong>Success!</strong> Your CV has been generated.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.main-content').insertBefore(alert, document.querySelector('.profile-overview'));
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

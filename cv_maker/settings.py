@@ -65,7 +65,6 @@ MIDDLEWARE = [
 # settings.py
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.auth0.Auth0OAuth2',  # Auth0 OAuth2 backend
     'django.contrib.auth.backends.ModelBackend',  # Default Django authentication backend
 )
 

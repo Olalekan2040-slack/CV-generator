@@ -23,7 +23,7 @@ def signin_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')
+                return redirect('dashboard')
     else:
         form = SigninForm()
     return render(request, 'signin.html', {'form': form})
