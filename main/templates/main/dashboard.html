@@ -344,103 +344,103 @@
                 </div>
             </div>
 
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button type="submit" class="btn btn-purple btn-lg">
-                    <i class="bi bi-file-earmark-pdf me-2"></i> Generate CV
-                </button>
+
+        <!-- Languages -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-translate me-2"></i> Languages</span>
+        <button type="button" class="btn btn-sm btn-purple" id="addLanguage">
+            <i class="bi bi-plus"></i> Add Language
+        </button>
+    </div>
+    <div class="card-body" id="languageContainer">
+        <div class="language-entry mb-3 border-bottom pb-3">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Language</label>
+                    <input type="text" class="form-control" name="language[]">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Proficiency Level</label>
+                    <select class="form-control" name="languageLevel[]">
+                        <option value="">Select Level</option>
+                        <option value="Native">Native</option>
+                        <option value="Fluent">Fluent</option>
+                        <option value="Advanced">Advanced</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Basic">Basic</option>
+                    </select>
+                </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- References -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-people me-2"></i> References</span>
+        <button type="button" class="btn btn-sm btn-purple" id="addReference">
+            <i class="bi bi-plus"></i> Add Reference
+        </button>
+    </div>
+    <div class="card-body" id="referenceContainer">
+        <div class="reference-entry mb-3 border-bottom pb-3">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Reference Name</label>
+                    <input type="text" class="form-control" name="referenceName[]">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Position/Title</label>
+                    <input type="text" class="form-control" name="referenceTitle[]">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Company/Organization</label>
+                    <input type="text" class="form-control" name="referenceCompany[]">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="referenceEmail[]">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-control" name="referencePhone[]">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hobbies & Interests -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-heart me-2"></i> Hobbies & Interests
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <textarea class="form-control" id="hobbies" name="hobbies" rows="3" 
+                      placeholder="Share your hobbies and interests (optional)"></textarea>
+            <div class="form-text">Example: Photography, Playing Guitar, Mountain Climbing, Reading Science Fiction</div>
+        </div>
+    </div>
+</div>
+
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+    <button type="submit" class="btn btn-purple btn-lg">
+        <i class="bi bi-file-earmark-pdf me-2"></i> Generate CV
+    </button>
+</div>
+
         </form>
     </div>
 
+
+
+    <script src="{% static 'main/dashboard.js' %}"></script>
+    <script src="{% static 'main/cv-generator.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        // Function to create remove button
-        function createRemoveButton() {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'btn btn-sm btn-danger mt-2';
-            button.innerHTML = '<i class="bi bi-trash"></i> Remove';
-            button.onclick = function() {
-                this.closest('.experience-entry, .education-entry').remove();
-            };
-            return button;
-        }
     
-        // Add Work Experience
-        document.getElementById('addExperience').addEventListener('click', function() {
-            const container = document.getElementById('experienceContainer');
-            const newEntry = container.children[0].cloneNode(true);
-            
-            // Clear all input values
-            newEntry.querySelectorAll('input, textarea').forEach(input => {
-                input.value = '';
-            });
-            
-            // Add remove button
-            newEntry.appendChild(createRemoveButton());
-            
-            container.appendChild(newEntry);
-        });
-    
-        // Add Education
-        document.getElementById('addEducation').addEventListener('click', function() {
-            const container = document.getElementById('educationContainer');
-            const newEntry = container.children[0].cloneNode(true);
-            
-            // Clear all input values
-            newEntry.querySelectorAll('input').forEach(input => {
-                input.value = '';
-            });
-            
-            // Add remove button
-            newEntry.appendChild(createRemoveButton());
-            
-            container.appendChild(newEntry);
-        });
-    
-        // Template Selection
-        document.querySelectorAll('.template-card').forEach(card => {
-            card.addEventListener('click', function() {
-                // Remove selected class from all cards
-                document.querySelectorAll('.template-card').forEach(c => {
-                    c.classList.remove('selected');
-                });
-                
-                // Add selected class to clicked card
-                this.classList.add('selected');
-                
-                // Check the radio button
-                this.querySelector('input[type="radio"]').checked = true;
-            });
-        });
-    
-        // Form Submission
-        document.querySelector('.cv-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Show loading state
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalText = submitButton.innerHTML;
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
-            submitButton.disabled = true;
-            
-            // Here you would typically send the form data to your Django backend
-            // For now, we'll just simulate a delay
-            setTimeout(() => {
-                submitButton.innerHTML = originalText;
-                submitButton.disabled = false;
-                
-                // Show success message (you can customize this based on your needs)
-                const alert = document.createElement('div');
-                alert.className = 'alert alert-success alert-dismissible fade show';
-                alert.innerHTML = `
-                    <strong>Success!</strong> Your CV has been generated.
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                `;
-                document.querySelector('.main-content').insertBefore(alert, document.querySelector('.profile-overview'));
-            }, 2000);
-        });
-    </script>
 </body>
 </html>
